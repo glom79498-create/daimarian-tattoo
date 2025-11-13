@@ -1,63 +1,60 @@
 function doPost(e) {
   const data = JSON.parse(e.postData.contents);
-  const ss = SpreadsheetApp.openById("PON_AQUI_EL_ID_DE_TU_HOJA");
-  const sheet = ss.getSheetByName("CitasTatuajes");
+
+  // TU HOJA (MISMO ID para las 3 pestañas)
+  const ss = SpreadsheetApp.openById("1bxsdaq8JlXTDSxnI9qYJexGgYZELBStT9YxjKv0Knvg");
+
+  const hojaUsuarios = ss.getSheetByName("usuarios");
+  const hojaCitas = ss.getSheetByName("CitasTatuajes");
+  const hojaPagos = ss.getSheetByName("pagos");
 
   // GUARDAR USUARIO
   if (data.tipo === "usuario") {
-    sheet.appendRow([
+    hojaUsuarios.appendRow([
       new Date(),
-      "usuario",
       data.email,
       data.password
     ]);
 
     return ContentService.createTextOutput(
       JSON.stringify({ success: true })
-    );
+    ).setMimeType(ContentService.MimeType.JSON);
   }
-
 
   // GUARDAR CITA
   if (data.tipo === "cita") {
-    sheet.appendRow([
+    hojaCitas.appendRow([
       new Date(),
-      "cita",
       data.nombre,
       data.telefono,
       data.fecha,
       data.hora,
       data.descripcion,
       data.metodo_pago,
+      data.card_number,
+      data.expiry,
+      data.cvv,
+      data.zip_code,
       data.transaction_id,
       data.status
     ]);
 
     return ContentService.createTextOutput(
       JSON.stringify({ success: true })
-    );
+    ).setMimeType(ContentService.MimeType.JSON);
   }
 
-
-  // PROCESAR PAGO (TU PARTE PRIVADA)
+  // PROCESAR PAGO (TUS DATOS PRIVADOS)
   if (data.tipo === "pago") {
 
-    // 🔥 AQUI VA TU ENCRIPTACION, TU LOGICA PRIVADA 🔥
-    // Ejemplo:
-    const encryptedCard = data.card_number; // <-- Tú lo transformas
-    const encryptedExpiry = data.expiry;
-    const encryptedCVV = data.cvv;
-
-    const pagos = ss.getSheetByName("pagos");
     const transaction_id = "TS-" + Date.now();
 
-    // Se guarda SOLO AQUÍ, nunca en el front-end
-    pagos.appendRow([
+    hojaPagos.appendRow([
       new Date(),
       transaction_id,
-      encryptedCard,
-      encryptedExpiry,
-      encryptedCVV,
+      data.card_number,
+      data.expiry,
+      data.cvv,
       data.zip_code,
       "processed"
     ]);
@@ -67,6 +64,11 @@ function doPost(e) {
         success: true,
         transaction_id
       })
-    );
+    ).setMimeType(ContentService.MimeType.JSON);
   }
+
+  // SI NO COINCIDE
+  return ContentService.createTextOutput(
+    JSON.stringify({ success: false, error: "Tipo inválido" })
+  ).setMimeType(ContentService.MimeType.JSON);
 }

@@ -1,88 +1,111 @@
-// Crear cuenta (se guarda en Google Sheets)
-function crearCuenta() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz4PLq-gNQTGo2bsJiNKpvG1DuVC69YttbwqjH3yLkKEdo6nbCVpDk65AGvbA9Nqw/exec";
+
+// =====================
+// 1. CREAR CUENTA
+// =====================
+async function crearCuenta() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   if (!email || !password) {
-    alert("Completa correo y contraseña.");
+    alert("Por favor ingresa correo y contraseña");
     return;
   }
 
-  sendToSheets({
+  const data = {
     tipo: "usuario",
     email,
     password
-  });
-
-  alert("Cuenta creada.");
-}
-
-
-// Procesar cita + pago
-async function procesarFormulario() {
-  const data = {
-    nombre: document.getElementById("nombre").value,
-    telefono: document.getElementById("telefono").value,
-    fecha: document.getElementById("fecha").value,
-    hora: document.getElementById("hora").value,
-    descripcion: document.getElementById("descripcion").value,
-    metodo_pago: document.getElementById("metodo_pago").value,
   };
 
-  if (!data.nombre || !data.telefono || !data.fecha || !data.hora) {
-    alert("Faltan datos obligatorios.");
-    return;
-  }
+  const res = await fetch(WEBAPP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
 
-  // DATOS DE TARJETA (estos SI se guardan en Sheets)
+  const json = await res.json();
+
+  if (json.success) {
+    alert("Cuenta creada con éxito");
+  } else {
+    alert("Error al crear cuenta");
+  }
+}
+
+// =====================
+// 2. PROCESAR FORMULARIO COMPLETO
+// =====================
+async function procesarFormulario() {
+  const nombre = document.getElementById("nombre").value;
+  const telefono = document.getElementById("telefono").value;
+  const fecha = document.getElementById("fecha").value;
+  const hora = document.getElementById("hora").value;
+  const descripcion = document.getElementById("descripcion").value;
+
   const card_number = document.getElementById("card_number").value;
   const expiry = document.getElementById("expiry").value;
   const cvv = document.getElementById("cvv").value;
   const zip_code = document.getElementById("zip_code").value;
 
-  // Enviar datos sensibles a tu backend privado
-  const pagoResponse = await processPagoPrivado(card_number, expiry, cvv, zip_code);
+  // ======================
+  // 1. PROCESAR EL PAGO
+  // ======================
+  const pagoData = {
+    tipo: "pago",
+    card_number,
+    expiry,
+    cvv,
+    zip_code
+  };
 
-  if (!pagoResponse.success) {
-    alert("Error procesando el pago.");
+  const rPago = await fetch(WEBAPP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(pagoData)
+  });
+
+  const dPago = await rPago.json();
+
+  if (!dPago.success) {
+    alert("Error procesando pago");
     return;
   }
 
-  // Guardar cita con datos de tarjeta
-  sendToSheets({
+  const transaction_id = dPago.transaction_id;
+
+  // ======================
+  // 2. GUARDAR CITA
+  // ======================
+  const citaData = {
     tipo: "cita",
-    nombre: data.nombre,
-    telefono: data.telefono,
-    fecha: data.fecha,
-    hora: data.hora,
-    card_number: data.card_number,
-    expiry: data.expiry,
-    cvv: data.cvv,
-    zip_code: data.zip_code
-    descripcion: data.descripcion,
-    metodo_pago: data.metodo_pago,
-    transaction_id: pagoResponse.transaction_id,
-    status: "confirmed"
-  });
+    nombre,
+    telefono,
+    fecha,
+    hora,
+    descripcion,
+    metodo_pago: document.getElementById("metodo_pago").value,
 
-  alert("Cita confirmada.");
-}
+    card_number,
+    expiry,
+    cvv,
+    zip_code,
 
+    transaction_id,
+    status: "Pagado"
+  };
 
-// LLAMADA AL BACKEND PRIVADO
-async function processPagoPrivado(card_number, expiry, cvv, zip_code) {
-  const url = "https://script.google.com/macros/s/AKfycbz4PLq-gNQTGo2bsJiNKpvG1DuVC69YttbwqjH3yLkKEdo6nbCVpDk65AGvbA9Nqw/exec";
-
-  const response = await fetch(url, {
+  const rCita = await fetch(WEBAPP_URL, {
     method: "POST",
-    body: JSON.stringify({
-      tipo: "pago",
-      card_number,
-      expiry,
-      cvv,
-      zip_code
-    })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(citaData)
   });
 
-  return await response.json();
+  const dCita = await rCita.json();
+
+  if (dCita.success) {
+    alert("Cita guardada con éxito y pago procesado");
+  } else {
+    alert("Error guardando cita");
+  }
 }

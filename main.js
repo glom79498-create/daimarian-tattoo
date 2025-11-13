@@ -1,8 +1,36 @@
+// =============================================
+// main.js — Versión Final con Sheets integrado
+// =============================================
+
 const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz4PLq-gNQTGo2bsJiNKpvG1DuVC69YttbwqjH3yLkKEdo6nbCVpDk65AGvbA9Nqw/exec";
 
-// =====================
+
+// =============================================
+// FUNCIÓN ÚNICA PARA ENVIAR AL WEBAPP
+// =============================================
+async function enviarAlWebApp(data) {
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    return await res.json();
+
+  } catch (err) {
+    console.error("Error enviando al WebApp:", err);
+    return { success: false, error: err };
+  }
+}
+
+
+
+// =============================================
 // 1. CREAR CUENTA
-// =====================
+// =============================================
 async function crearCuenta() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -18,13 +46,7 @@ async function crearCuenta() {
     password
   };
 
-  const res = await fetch(WEBAPP_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-
-  const json = await res.json();
+  const json = await enviarAlWebApp(data);
 
   if (json.success) {
     alert("Cuenta creada con éxito");
@@ -33,10 +55,13 @@ async function crearCuenta() {
   }
 }
 
-// =====================
+
+
+// =============================================
 // 2. PROCESAR FORMULARIO COMPLETO
-// =====================
+// =============================================
 async function procesarFormulario() {
+
   const nombre = document.getElementById("nombre").value;
   const telefono = document.getElementById("telefono").value;
   const fecha = document.getElementById("fecha").value;
@@ -48,9 +73,11 @@ async function procesarFormulario() {
   const cvv = document.getElementById("cvv").value;
   const zip_code = document.getElementById("zip_code").value;
 
-  // ======================
-  // 1. PROCESAR EL PAGO
-  // ======================
+
+
+  // ===================================================
+  // 1. PROCESAR PAGO
+  // ===================================================
   const pagoData = {
     tipo: "pago",
     card_number,
@@ -59,13 +86,7 @@ async function procesarFormulario() {
     zip_code
   };
 
-  const rPago = await fetch(WEBAPP_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(pagoData)
-  });
-
-  const dPago = await rPago.json();
+  const dPago = await enviarAlWebApp(pagoData);
 
   if (!dPago.success) {
     alert("Error procesando pago");
@@ -74,9 +95,11 @@ async function procesarFormulario() {
 
   const transaction_id = dPago.transaction_id;
 
-  // ======================
+
+
+  // ===================================================
   // 2. GUARDAR CITA
-  // ======================
+  // ===================================================
   const citaData = {
     tipo: "cita",
     nombre,
@@ -95,13 +118,8 @@ async function procesarFormulario() {
     status: "Pagado"
   };
 
-  const rCita = await fetch(WEBAPP_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(citaData)
-  });
+  const dCita = await enviarAlWebApp(citaData);
 
-  const dCita = await rCita.json();
 
   if (dCita.success) {
     alert("Cita guardada con éxito y pago procesado");

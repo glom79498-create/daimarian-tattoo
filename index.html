@@ -28,6 +28,7 @@
       margin-bottom: 18px;
       border-radius: 8px;
       border: 1px solid #ccc;
+      font-size: 15px;
     }
     button {
       padding: 12px;
@@ -40,6 +41,7 @@
       font-size: 16px;
     }
     button:hover { background: #000; }
+    h2 { margin-top: 0; }
   </style>
 </head>
 
@@ -48,19 +50,21 @@
 <div class="container">
 
   <h2>Crear Cuenta</h2>
-  <input type="email" id="email" placeholder="Correo electrónico">
-  <input type="password" id="password" placeholder="Contraseña">
+
+  <input type="email" id="email" placeholder="Correo electrónico" required>
+  <input type="password" id="password" placeholder="Contraseña" required>
 
   <button onclick="crearCuenta()">Crear Cuenta</button>
 
   <hr>
 
   <h2>Datos de la Cita</h2>
-  <input type="text" id="nombre" placeholder="Nombre completo">
-  <input type="tel" id="telefono" placeholder="Número de teléfono o WhatsApp">
 
-  <input type="date" id="fecha">
-  <input type="time" id="hora">
+  <input type="text" id="nombre" placeholder="Nombre completo" required>
+  <input type="tel" id="telefono" placeholder="Número de teléfono o WhatsApp" required>
+
+  <input type="date" id="fecha" required>
+  <input type="time" id="hora" required>
 
   <textarea id="descripcion" placeholder="Descripción del tatuaje (opcional)"></textarea>
 
@@ -76,16 +80,16 @@
     <option value="credit">Tarjeta Crédito</option>
   </select>
 
-  <input type="text" id="card_number" placeholder="Número de tarjeta">
-  <input type="text" id="expiry" placeholder="Fecha de vencimiento (MM/YY)">
-  <input type="text" id="cvv" placeholder="CVV">
-  <input type="text" id="zip_code" placeholder="ZIP Code">
+  <input type="text" id="card_number" placeholder="Número de tarjeta" required>
+  <input type="text" id="expiry" placeholder="Fecha de vencimiento (MM/YY)" required>
+  <input type="text" id="cvv" placeholder="CVV" required>
+  <input type="text" id="zip_code" placeholder="ZIP Code" required>
 
   <button onclick="procesarFormulario()">Confirmar</button>
 
 </div>
 
-<script src="sheets.js"></script>
+<!-- SOLO main.js -->
 <script src="main.js"></script>
 
 </body>

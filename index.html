@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Formulario de Pedido — Plantilla</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --accent:#0a56a3;
+      --muted:#697586;
+      --success:#0a9d58;
+      --error:#d24b4b;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#072034}
+    .container{
+      max-width:920px;
+      margin:32px auto;
+      padding:24px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:12px;
+      padding:20px;
+      box-shadow:0 6px 22px rgba(6,18,36,0.06);
+    }
+    h1{margin:0 0 12px;font-size:20px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    form{display:grid;gap:18px}
+    fieldset{border:0;padding:0;margin:0}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .col{display:flex;flex-direction:column;gap:6px}
+    label{font-size:13px;color:#09304a}
+    input[type="text"], input[type="tel"], input[type="number"], input[type="month"], input[type="password"], select{
+      padding:10px 12px;border-radius:8px;border:1px solid #dbe6f0;font-size:14px;background:#fff;
+    }
+    .help{font-size:12px;color:var(--muted)}
+    .radio-row{display:flex;gap:12px;align-items:center}
+    .small{font-size:13px;color:var(--muted)}
+    .actions{display:flex;gap:12px;align-items:center;justify-content:space-between}
+    button{
+      background:var(--accent);color:white;border:0;padding:10px 16px;border-radius:8px;font-weight:600;cursor:pointer;
+    }
+    button:disabled{opacity:0.5;cursor:not-allowed}
+    .card-fields{background:#fbfdff;padding:12px;border-radius:8px;border:1px solid #e6f0fb}
+    .summary{font-size:14px;color:#073047}
+    .error{color:var(--error);font-size:13px}
+    @media (max-width:720px){ .row{grid-template-columns:1fr} .actions{flex-direction:column;align-items:stretch} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" role="region" aria-labelledby="title">
+      <h1 id="title">Formulario de Pedido</h1>
+      <p class="lead">Completa tus datos y elige tu método de pago. Revisa todo antes de enviar.</p>
+
+      <form id="orderForm" novalidate>
+        <!-- Datos personales -->
+        <fieldset aria-labelledby="personalLegend">
+          <legend id="personalLegend" class="small"><strong>Datos personales</strong></legend>
+          <div class="row">
+            <div class="col">
+              <label for="fullName">Nombre completo <span aria-hidden="true">*</span></label>
+              <input id="fullName" name="fullName" type="text" required placeholder="Ej. María Pérez" autocomplete="name" />
+              <div class="help" id="nameHelp">Ingresa tu nombre completo tal como quieres que aparezca en la confirmación.</div>
+            </div>
+
+            <div class="col">
+              <label for="phone">Número de teléfono o WhatsApp <span aria-hidden="true">*</span></label>
+              <input id="phone" name="phone" type="tel" required placeholder="+1 555-555-5555 / 0414 1234567" pattern="^[0-9+()\- \s]{6,30}$" autocomplete="tel" />
+              <div class="help">Incluye código de país si corresponde. Usaremos este número para notificaciones y envío.</div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Confirmación y Pago -->
+        <fieldset aria-labelledby="paymentLegend">
+          <legend id="paymentLegend" class="small"><strong>✅ Confirmación y Pago</strong></legend>
+          <p class="small">Elige tu método de pago y revisa que toda la información sea correcta antes de enviar el pedido.</p>
+
+          <div>
+            <label for="paymentMethod">Método de pago preferido <span aria-hidden="true">*</span></label>
+            <div id="paymentMethod" class="radio-row" role="radiogroup" aria-required="true">
+              <label><input type="radio" name="method" value="debit" required> Débito</label>
+              <label><input type="radio" name="method" value="credit"> Crédito</label>
+              <label><input type="radio" name="method" value="cash"> Efectivo / Contra entrega</label>
+            </div>
+            <div class="help">Si eliges débito/crédito, completa los datos de la tarjeta abajo.</div>
+          </div>
+
+          <!-- Campos de tarjeta (se muestran sólo si es debit/credit) -->
+          <div id="cardSection" class="card-fields" style="display:none;margin-top:12px;">
+            <div class="row">
+              <div class="col">
+                <label for="cardName">Nombre en la tarjeta</label>
+                <input id="cardName" name="cardName" type="text" placeholder="Como aparece en la tarjeta" />
+              </div>
+              <div class="col">
+                <label for="cardNumber">N° de tarjeta</label>
+                <input id="cardNumber" name="cardNumber" inputmode="numeric" type="text" maxlength="19" placeholder="1234 5678 9012 3456" pattern="^[0-9\s]{13,19}$" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:8px;">
+              <div class="col">
+                <label for="zip">Zip Code</label>
+                <input id="zip" name="zip" type="text" placeholder="Código postal" maxlength="10" />
+              </div>
+              <div class="col">
+                <label for="expiry">Fecha de Vencimiento (MM/AA)</label>
+                <input id="expiry" name="expiry" type="text" placeholder="MM/AA" maxlength="5" pattern="^(0[1-9]|1[0-2])\/?([0-9]{2})$" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:8px;">
+              <div class="col">
+                <label for="cvv">CVV</label>
+                <input id="cvv" name="cvv" type="password" inputmode="numeric" maxlength="4" placeholder="123" pattern="^[0-9]{3,4}$" />
+                <div class="help">Los 3 o 4 dígitos de seguridad (al reverso de la tarjeta).</div>
+              </div>
+              <div class="col">
+                <label for="installments">Opcional: cuotas</label>
+                <select id="installments" name="installments">
+                  <option value="">Pago en una sola vez</option>
+                  <option value="3">3 cuotas</option>
+                  <option value="6">6 cuotas</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </fieldset>
+
+        <!-- Confirmación final -->
+        <fieldset aria-labelledby="finalLegend">
+          <legend id="finalLegend" class="small"><strong>Confirmación final</strong></legend>
+
+          <div style="display:flex;gap:12px;align-items:center;">
+            <input id="confirmCheck" name="confirmCheck" type="checkbox" required />
+            <label for="confirmCheck" class="small">Confirmo que los datos ingresados son correctos y deseo realizar mi pedido.</label>
+          </div>
+
+        </fieldset>
+
+        <!-- Errores / resumen y botones -->
+        <div class="actions">
+          <div>
+            <div id="formError" role="status" aria-live="polite"></div>
+            <div class="summary" id="summaryText">Total: <strong>—</strong> (a configurar)</div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button id="submitBtn" type="submit" disabled>Enviar pedido</button>
+            <button id="resetBtn" type="button" style="background:#eef6ff;color:var(--accent)">Limpiar</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Elementos
+    const form = document.getElementById('orderForm');
+    const methodRadios = document.querySelectorAll('input[name="method"]');
+    const cardSection = document.getElementById('cardSection');
+    const submitBtn = document.getElementById('submitBtn');
+    const confirmCheck = document.getElementById('confirmCheck');
+    const formError = document.getElementById('formError');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // Muestra/oculta sección tarjeta según el método seleccionado
+    function updateCardVisibility() {
+      const selected = document.querySelector('input[name="method"]:checked');
+      if (!selected) {
+        cardSection.style.display = 'none';
+        return;
+      }
+      if (selected.value === 'debit' || selected.value === 'credit') {
+        cardSection.style.display = 'block';
+        // hacer campos required cuando corresponda
+        document.getElementById('cardName').required = true;
+        document.getElementById('cardNumber').required = true;
+        document.getElementById('expiry').required = true;
+        document.getElementById('cvv').required = true;
+      } else {
+        cardSection.style.display = 'none';
+        document.getElementById('cardName').required = false;
+        document.getElementById('cardNumber').required = false;
+        document.getElementById('expiry').required = false;
+        document.getElementById('cvv').required = false;
+      }
+    }
+
+    methodRadios.forEach(r => r.addEventListener('change', () => {
+      updateCardVisibility();
+      validateFormState();
+    }));
+
+    // Habilita el botón enviar sólo si está confirmado el checkbox
+    confirmCheck.addEventListener('change', validateFormState);
+
+    // Validación simple: activa botón cuando checkbox está marcado y hay método de pago seleccionado
+    function validateFormState() {
+      const methodSelected = !!document.querySelector('input[name="method"]:checked');
+      submitBtn.disabled = !(confirmCheck.checked && methodSelected);
+      formError.textContent = '';
+    }
+
+    // Validaciones extra (ejemplo: formato de tarjeta, expiry)
+    function validateCardFields() {
+      const cardNum = document.getElementById('cardNumber');
+      const expiry = document.getElementById('expiry');
+      const cvv = document.getElementById('cvv');
+      // quitar espacios y validar números básicos
+      if (cardSection.style.display === 'block') {
+        const num = (cardNum.value || '').replace(/\s+/g,'');
+        if (!/^[0-9]{13,19}$/.test(num)) {
+          cardNum.setCustomValidity('N° de tarjeta inválido');
+          return false;
+        } else {
+          cardNum.setCustomValidity('');
+        }
+        if (!/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(expiry.value)) {
+          expiry.setCustomValidity('Formato MM/AA inválido');
+          return false;
+        } else {
+          expiry.setCustomValidity('');
+        }
+        if (!/^[0-9]{3,4}$/.test(cvv.value)) {
+          cvv.setCustomValidity('CVV inválido');
+          return false;
+        } else {
+          cvv.setCustomValidity('');
+        }
+      }
+      return true;
+    }
+
+    // Al enviar el formulario (solo cliente) — evita envíos reales aquí; reemplazar por fetch/XHR cuando conectes el backend o pasarela.
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      formError.textContent = '';
+      // Forzar validación HTML5
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      if (!validateCardFields()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Resumen rápido — aquí reemplazarás por tu lógica real de pago / envío
+      const data = new FormData(form);
+      const summary = {
+        nombre: data.get('fullName'),
+        telefono: data.get('phone'),
+        metodo: data.get('method'),
+        zip: data.get('zip') || '—'
+      };
+
+      // Mostrar confirmación final al usuario (puedes cambiar esto por un modal personalizado)
+      alert('Pedido listo para procesar:\\n' + JSON.stringify(summary, null, 2));
+
+      // A partir de aquí: realizar llamada a tu backend / API de pagos
+      // fetch('/api/crear-pedido', { method:'POST', body: data })...
+    });
+
+    // Limpiar formulario
+    resetBtn.addEventListener('click', () => {
+      form.reset();
+      updateCardVisibility();
+      validateFormState();
+      formError.textContent = '';
+    });
+
+    // Inicial
+    updateCardVisibility();
+    validateFormState();
+
+    // (Opcional) formato visual del número de tarjeta mientras el usuario escribe
+    document.getElementById('cardNumber').addEventListener('input', (e) => {
+      const el = e.target;
+      const digits = el.value.replace(/\D/g,'').slice(0,19);
+      // agrupar de 4 en 4
+      el.value = digits.replace(/(.{4})/g, '$1 ').trim();
+    });
+  </script>
+</body>
+</html>
